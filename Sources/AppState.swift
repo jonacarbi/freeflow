@@ -2402,11 +2402,26 @@ final class AppState: ObservableObject, @unchecked Sendable {
         return "\(status); detected press enter command"
     }
 
+    /// The macOS alert volume (Settings > Sound > Alert volume). `NSSound` plays at
+    /// full output volume and ignores this slider, which makes every FreeFlow alert
+    /// far louder than the system's own beeps. Scale by it manually so the app
+    /// matches the rest of the system. Defaults to 1.0 when the key is unset.
+    private var systemAlertVolume: Float {
+        // Synchronize first: the preferences cache is per-process, so without this the
+        // value is read once and never reflects later changes to the system slider.
+        CFPreferencesAppSynchronize(kCFPreferencesAnyApplication)
+        guard let value = CFPreferencesCopyAppValue(
+            "com.apple.sound.beep.volume" as CFString,
+            kCFPreferencesAnyApplication
+        ) as? Double else { return 1.0 }
+        return Float(min(max(value, 0), 1))
+    }
+
     func playAlertSound(named name: String) {
         guard alertSoundsEnabled else { return }
 
         let sound = NSSound(named: name)
-        sound?.volume = soundVolume
+        sound?.volume = soundVolume * systemAlertVolume
         sound?.play()
     }
 

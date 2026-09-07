@@ -699,7 +699,25 @@ final class UpdateManager: ObservableObject {
         updateStatus = .idle
     }
 
+    /// Path of `scripts/dev-self-update.sh` when this bundle was built from a
+    /// source checkout (`<repo>/build/<App>.app`), otherwise nil.
+    private var sourceUpdateScript: URL? {
+        let repo = URL(fileURLWithPath: Bundle.main.bundlePath)
+            .deletingLastPathComponent()   // build/
+            .deletingLastPathComponent()   // repo root
+        let script = repo.appendingPathComponent("scripts/dev-self-update.sh")
+        return FileManager.default.isExecutableFile(atPath: script.path) ? script : nil
+    }
+
     func downloadAndInstall(release: GitHubRelease) {
+        // A source build must update by merging and rebuilding, not by dropping
+        // a release DMG over the bundle: that discards every local change and
+        // replaces the dev app with the shipping one.
+        if let script = sourceUpdateScript {
+            updateFromSource(script: script)
+            return
+        }
+
         guard let dmgAsset = release.assets.first(where: { $0.name.hasSuffix(".dmg") }) else {
             if let url = URL(string: release.htmlUrl) {
                 NSWorkspace.shared.open(url)
@@ -713,6 +731,26 @@ final class UpdateManager: ObservableObject {
         activeDownloadTask = Task {
             await performUpdate(downloadURL: downloadURL, expectedSize: dmgAsset.size)
         }
+    }
+
+    /// Hands off to the merge-and-rebuild script, which waits for this process
+    /// to exit, rebuilds into the same bundle, and relaunches it.
+    private func updateFromSource(script: URL) {
+        updateStatus = .installing
+
+        let process = Process()
+        process.executableURL = URL(fileURLWithPath: "/bin/bash")
+        process.arguments = [script.path,
+                             String(ProcessInfo.processInfo.processIdentifier),
+                             Bundle.main.bundlePath]
+        do {
+            try process.run()
+        } catch {
+            updateStatus = .error("Could not start updater: \(error.localizedDescription)")
+            return
+        }
+
+        NSApp.terminate(nil)
     }
 
     private func performUpdate(downloadURL: URL, expectedSize: Int) async {

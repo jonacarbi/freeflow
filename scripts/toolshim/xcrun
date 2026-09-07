@@ -1,0 +1,9 @@
+#!/bin/sh
+# Force the Xcode SDK; the CommandLineTools SDK is a newer Swift than Xcode's
+# swiftc and fails on SwiftUI macros.
+SDK=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk
+if [ "$1" = "--show-sdk-path" ] && [ -d "$SDK" ]; then
+  echo "$SDK"
+  exit 0
+fi
+exec /usr/bin/xcrun "$@"

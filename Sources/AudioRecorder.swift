@@ -571,15 +571,6 @@ final class AudioRecorder: NSObject, ObservableObject, AVCaptureAudioDataOutputS
 
         let session = AVCaptureSession()
         let dataOutput = AVCaptureAudioDataOutput()
-        dataOutput.audioSettings = [
-            AVFormatIDKey: kAudioFormatLinearPCM,
-            AVSampleRateKey: recordingTargetFormat.sampleRate,
-            AVNumberOfChannelsKey: Int(recordingTargetFormat.channelCount),
-            AVLinearPCMBitDepthKey: bitDepth(for: recordingTargetFormat.commonFormat),
-            AVLinearPCMIsFloatKey: isFloatFormat(recordingTargetFormat.commonFormat),
-            AVLinearPCMIsBigEndianKey: false,
-            AVLinearPCMIsNonInterleaved: !recordingTargetFormat.isInterleaved,
-        ]
         dataOutput.setSampleBufferDelegate(self, queue: sampleBufferQueue)
 
         let input: AVCaptureDeviceInput
@@ -606,6 +597,27 @@ final class AudioRecorder: NSObject, ObservableObject, AVCaptureAudioDataOutputS
             throw AudioRecorderError.failedToStartCaptureSession("Session rejected audio data output.")
         }
         session.addOutput(dataOutput)
+
+        // Ask only for Float32 and leave sample rate / channel count at the device's
+        // native values; appendSampleBufferToFile() converts to recordingTargetFormat.
+        //
+        // Both stricter and looser settings break on 24-bit interfaces such as the
+        // PreSonus AudioBox, because AVAudioFormat cannot model 24-bit integer audio
+        // (commonFormat resolves to .otherFormat) and validatedPCMBufferFormat()
+        // then rejects every buffer:
+        //   - Forcing 16kHz/mono/Int16 makes AVFoundation emit 16-bit samples in
+        //     3-byte high-aligned frames.
+        //   - Setting nothing at all yields the raw 24-bit native stream, which fails
+        //     whenever the device negotiates Int24 instead of Float32.
+        // Float32 is representable for every device and lossless from 24-bit, so the
+        // capture format is stable and the converter below handles the rest.
+        dataOutput.audioSettings = [
+            AVFormatIDKey: kAudioFormatLinearPCM,
+            AVLinearPCMBitDepthKey: 32,
+            AVLinearPCMIsFloatKey: true,
+            AVLinearPCMIsBigEndianKey: false,
+            AVLinearPCMIsNonInterleaved: false,
+        ]
 
         session.commitConfiguration()
         needsCommitConfiguration = false
