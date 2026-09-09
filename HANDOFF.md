@@ -35,8 +35,8 @@ _Entry points, important modules, config, secrets location (not values)._
 
 - **Project:** `freeflow`
 - **Branch:** `local`
-- **Last updated:** 2026-09-07 00:04:58 -03
-- **Built on commit:** ad5c827 — Merge pull request #300 from tejasnafde/fix/network-connection-lost-guidance (marcbodea, 2026-09-04)
+- **Last updated:** 2026-09-09 07:36:23 -03
+- **Built on commit:** 5e57a30 — fix: keep AudioBox capture working, match system alert volume, update from source (jonacarbi, 2026-09-07)
 - **README says:** <p align="center">
 
 ## How to build / run / test
@@ -54,6 +54,7 @@ _Entry points, important modules, config, secrets location (not values)._
 - AGENTS.md
 - CHANGELOG.md
 - FreeFlow.entitlements
+- HANDOFF.md
 - Info.plist
 - LICENSE
 - Makefile
@@ -68,7 +69,7 @@ _Entry points, important modules, config, secrets location (not values)._
 
 - .swift — 51 file(s)
 - .yml — 8 file(s)
-- .md — 6 file(s)
+- .md — 7 file(s)
 - .png — 5 file(s)
 - .sh — 3 file(s)
 - .txt — 2 file(s)
@@ -81,14 +82,21 @@ _Entry points, important modules, config, secrets location (not values)._
 
 ## Changes in this commit
 
-- M	Sources/AppState.swift
-- M	Sources/AudioRecorder.swift
+- M	Makefile
 - M	Sources/UpdateManager.swift
-- A	scripts/dev-self-update.sh
-- A	scripts/toolshim/xcrun
+- M	scripts/dev-self-update.sh
 
 ## Recent history
 
+- 5e57a30 fix: keep AudioBox capture working, match system alert volume, update from source _(jonacarbi, 2026-09-07)_
 - ad5c827 Merge pull request #300 from tejasnafde/fix/network-connection-lost-guidance _(marcbodea, 2026-09-04)_
+- d9de51f Distinguish lost transcription connections _(Tejas Nafde, 2026-08-19)_
+- 4c6a557 Merge pull request #297 from zachlatta/agent/test-transcript-text-core _(marcbodea, 2026-08-19)_
+- a0666e9 Normalize malformed transcript responses _(marcbodea, 2026-08-18)_
+- 8dc0cef Test transcript text processing _(marcbodea, 2026-08-18)_
+- 6319dd4 Merge pull request #296 from zachlatta/agent/harden-release-workflows _(marcbodea, 2026-08-18)_
+- 72e0dd1 Limit release checkout credentials _(marcbodea, 2026-08-18)_
+- 301d208 Harden release workflow dependencies _(marcbodea, 2026-08-18)_
+- 1b044c1 Merge pull request #293 from zachlatta/agent/maintenance-foundation _(marcbodea, 2026-08-18)_
 
 <!-- HANDOFF:AUTO:END -->

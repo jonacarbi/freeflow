@@ -57,5 +57,12 @@ if ! make all CODESIGN_IDENTITY="$IDENTITY"; then
     fail "upstream build failed; rolled back to $BEFORE"
 fi
 
+BUILT="$REPO/build/$(basename "$APP")"
+if [ "$BUILT" != "$APP" ]; then
+    # The app usually runs from /Applications; put the new build where it lives
+    # so there is only ever one FreeFlow Dev bundle.
+    rm -rf "$APP" && cp -R "$BUILT" "$APP" || fail "could not install $BUILT to $APP"
+fi
+
 echo "updated $BEFORE -> $(git rev-parse HEAD)"
 open "$APP"

@@ -699,21 +699,26 @@ final class UpdateManager: ObservableObject {
         updateStatus = .idle
     }
 
-    /// Path of `scripts/dev-self-update.sh` when this bundle was built from a
-    /// source checkout (`<repo>/build/<App>.app`), otherwise nil.
-    private var sourceUpdateScript: URL? {
-        let repo = URL(fileURLWithPath: Bundle.main.bundlePath)
-            .deletingLastPathComponent()   // build/
-            .deletingLastPathComponent()   // repo root
-        let script = repo.appendingPathComponent("scripts/dev-self-update.sh")
-        return FileManager.default.isExecutableFile(atPath: script.path) ? script : nil
+    /// Checkout this bundle was built from, stamped into Info.plist by the
+    /// Makefile. Present only on source builds; a shipping release has no key.
+    ///
+    /// Deriving it from the bundle's own location does not work: the app is
+    /// normally launched from /Applications, not from `<repo>/build`.
+    private var sourceRepo: String? {
+        Bundle.main.infoDictionary?["FreeFlowSourceRepo"] as? String
     }
 
     func downloadAndInstall(release: GitHubRelease) {
         // A source build must update by merging and rebuilding, not by dropping
         // a release DMG over the bundle: that discards every local change and
-        // replaces the dev app with the shipping one.
-        if let script = sourceUpdateScript {
+        // swaps the dev app (and its settings domain, and its code signature,
+        // and its granted permissions) for the shipping one.
+        if let repo = sourceRepo {
+            let script = URL(fileURLWithPath: repo).appendingPathComponent("scripts/dev-self-update.sh")
+            guard FileManager.default.isExecutableFile(atPath: script.path) else {
+                showErrorAlert("This build came from \(repo), but scripts/dev-self-update.sh is missing there.\n\nInstalling the release build instead would wipe your local changes, so nothing was installed.")
+                return
+            }
             updateFromSource(script: script)
             return
         }

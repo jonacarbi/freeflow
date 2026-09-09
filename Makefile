@@ -77,6 +77,7 @@ endif
 	@plutil -replace CFBundleDisplayName -string "$(APP_NAME)" "$(CONTENTS)/Info.plist"
 	@plutil -replace CFBundleExecutable -string "$(APP_NAME)" "$(CONTENTS)/Info.plist"
 	@plutil -replace CFBundleIdentifier -string "$(BUNDLE_ID)" "$(CONTENTS)/Info.plist"
+	@plutil -replace FreeFlowSourceRepo -string "$(CURDIR)" "$(CONTENTS)/Info.plist"
 	@cp $(ICON_ICNS) "$(RESOURCES)/AppIcon.icns"
 	@plutil -replace NSMicrophoneUsageDescription -string "$(APP_NAME) needs microphone access to transcribe your speech." "$(CONTENTS)/Info.plist"
 	@plutil -replace NSSpeechRecognitionUsageDescription -string "$(APP_NAME) needs speech recognition to convert your voice to text." "$(CONTENTS)/Info.plist"
@@ -168,3 +169,11 @@ clean:
 
 run: all
 	open "$(APP_BUNDLE)"
+
+.PHONY: install
+# Copy the freshly built bundle over the one the user actually launches, so
+# /Applications and build/ never drift into two different apps.
+install: all
+	@rm -rf "/Applications/$(APP_NAME).app"
+	@cp -R "$(APP_BUNDLE)" /Applications/
+	@echo "Installed /Applications/$(APP_NAME).app"
