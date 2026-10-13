@@ -1,3 +1,5 @@
+> Standalone copy of [zachlatta/freeflow](https://github.com/zachlatta/freeflow) with my own changes. Original license and history retained.
+
 <p align="center">
   <img src="Resources/AppIcon-Source.png" width="128" height="128" alt="FreeFlow icon">
 </p>

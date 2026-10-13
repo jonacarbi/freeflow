@@ -35,9 +35,9 @@ _Entry points, important modules, config, secrets location (not values)._
 
 - **Project:** `freeflow`
 - **Branch:** `local`
-- **Last updated:** 2026-09-09 07:36:23 -03
-- **Built on commit:** 5e57a30 — fix: keep AudioBox capture working, match system alert volume, update from source (jonacarbi, 2026-09-07)
-- **README says:** <p align="center">
+- **Last updated:** 2026-10-13 17:31:39 -03
+- **Built on commit:** 1da0569 — fix: update in place from the stamped source checkout (jonacarbi, 2026-09-09)
+- **README says:** > Standalone copy of [zachlatta/freeflow](https://github.com/zachlatta/freeflow) with my own changes. Original license and history retained.
 
 ## How to build / run / test
 
@@ -82,12 +82,11 @@ _Entry points, important modules, config, secrets location (not values)._
 
 ## Changes in this commit
 
-- M	Makefile
-- M	Sources/UpdateManager.swift
-- M	scripts/dev-self-update.sh
+- M	README.md
 
 ## Recent history
 
+- 1da0569 fix: update in place from the stamped source checkout _(jonacarbi, 2026-09-09)_
 - 5e57a30 fix: keep AudioBox capture working, match system alert volume, update from source _(jonacarbi, 2026-09-07)_
 - ad5c827 Merge pull request #300 from tejasnafde/fix/network-connection-lost-guidance _(marcbodea, 2026-09-04)_
 - d9de51f Distinguish lost transcription connections _(Tejas Nafde, 2026-08-19)_
@@ -97,6 +96,5 @@ _Entry points, important modules, config, secrets location (not values)._
 - 6319dd4 Merge pull request #296 from zachlatta/agent/harden-release-workflows _(marcbodea, 2026-08-18)_
 - 72e0dd1 Limit release checkout credentials _(marcbodea, 2026-08-18)_
 - 301d208 Harden release workflow dependencies _(marcbodea, 2026-08-18)_
-- 1b044c1 Merge pull request #293 from zachlatta/agent/maintenance-foundation _(marcbodea, 2026-08-18)_
 
 <!-- HANDOFF:AUTO:END -->
